@@ -43,10 +43,12 @@ const UserRoom = () => {
 
     const createRoom = () => {
         const roomId = generateId(roomIdLen);
-        joinRoom(roomId);
+        joinRoom(roomId, true);
     };
 
-    const joinRoom = (roomId) => {
+    const joinRoom = (roomId, isFromCreate) => {
+        console.log("room id: " + roomId);
+
         const roomRef = firestore.collection("rooms").doc(roomId);
         roomRef.get().then((doc) => {
             if (doc.exists) {
@@ -58,6 +60,12 @@ const UserRoom = () => {
                     users: newUsers
                 })
             } else {
+                // error if from join
+                if (!isFromCreate) {
+                    alert("Room does not exist");
+                    throw new Error("Room does not exist");
+                }
+
                 roomRef.set({
                     id: roomId,
                     users: [auth.currentUser.email]
@@ -91,14 +99,20 @@ const UserRoom = () => {
             roomRef.get().then((doc) => {
                 var newUsers = doc.data().users
                 newUsers = newUsers.filter(function(value) { return value != auth.currentUser.email});
-                roomRef.update({
-                    users: newUsers
-                })
+                if (newUsers.length > 0) {
+                    roomRef.update({
+                        users: newUsers
+                    })
+                } else {
+                    roomRef.delete();
+                }
             })
         }).catch((error) => {
             console.log("Error updating player or room document:", error);
         });
     }
+
+    const [joinRoomInput, setJoinRoomInput] = useState('')
 
     return (
         <div className='container'>
@@ -108,8 +122,13 @@ const UserRoom = () => {
                     <h1>Hello, {name}</h1>
                     <h3>Your total wins: {(userData && userData[0] ? userData[0].totalWins : "Loading...")}</h3>
                     <h3>Your rank: {(userData && userData[0] ? getRank(userData[0].totalWins) : "Loading...")}</h3>
-                    <button className='btn' onClick={() => createRoom()}>Create Room</button>
-                    <button className='btn' onClick={() => joinRoom("GDREOJ")}>Join Room</button>
+                    <div>
+                        <button className='btn' onClick={() => createRoom()}>Create Room</button>
+                    </div>
+                    <div>
+                        <input className='input' value={joinRoomInput} onInput={e => setJoinRoomInput(e.target.value)}/>
+                        <button className='btn' onClick={() => joinRoom(joinRoomInput, false)}>Join Room</button>
+                    </div>
                     <SignOut />
                 </div>
                 :
