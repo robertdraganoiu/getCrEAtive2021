@@ -9,14 +9,29 @@ import { auth } from './App'
 
 const GameRoom = ({roomId, firestore, username, usermail}) => {
 
-    const usersRef = firestore.collection('rooms');
-    const query = usersRef.where("roomId", "==", roomId);
+    const roomsRef = firestore.collection('rooms');
+    const query = roomsRef.where("id", "==", roomId);
 
     const [roomData] = useCollectionData(query, {idField: roomId});
 
     return (
         <div>
             <h1>Room #{roomId}</h1>
+            <h2>Users in room:</h2>
+            <div>
+                {roomData && roomData[0]? 
+                <ul>
+                    {roomData[0].users.map((user) => {
+                        return <h3 key={user}>
+                            {user}
+                        </h3>
+                    })}
+                </ul>
+                :
+                <h3>Loading...</h3>
+            }
+            </div>
+            
         </div>
     );
 
