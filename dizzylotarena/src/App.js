@@ -3,7 +3,6 @@ import 'firebase/firestore';
 import 'firebase/auth';
 
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 import React from 'react';
 import UserRoom from './UserRoom';
@@ -20,7 +19,6 @@ firebase.initializeApp({
 
 export const auth = firebase.auth();
 export const provider = new firebase.auth.GoogleAuthProvider();
-const firestore = firebase.firestore();
 
 function App() {
   const [user] = useAuthState(auth);

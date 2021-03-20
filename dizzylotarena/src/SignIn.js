@@ -1,11 +1,17 @@
 import React from 'react'
+
 import { auth, provider } from "./App"
 
 const SignIn = () => {
+
+    const signIn = () => {
+        auth.signInWithPopup(provider);
+    }
+
     return (
-      <>
-      <button className='btn' onClick={() => auth.signInWithPopup(provider)}>Sign in with Google</button>
-      </>
+    <div className='container'>
+      <button className='btn' onClick={() => signIn()}>Sign in with Google</button>
+    </div>
     );
 };
 
