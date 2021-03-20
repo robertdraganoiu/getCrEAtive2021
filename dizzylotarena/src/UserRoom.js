@@ -20,6 +20,8 @@ const UserRoom = () => {
     const query = usersRef.where("mail", "==", auth.currentUser.email);
 
     const docRef = firestore.collection("users").doc(auth.currentUser.email);
+
+    // create user document if it does not exits, load it otherwise
     useEffect(() => {docRef.get().then((doc) => {
             if (doc.exists) {
                 console.log("User data:", doc.data());
@@ -39,8 +41,10 @@ const UserRoom = () => {
         });
     }, []);
 
+    // hook for continuous updating of user data
     const [userData] = useCollectionData(query, {idField: auth.currentUser.email});
 
+    // create/join/exit functions with their room updates
     const createRoom = () => {
         const roomId = generateId(roomIdLen);
         joinRoom(roomId, true);
@@ -112,6 +116,7 @@ const UserRoom = () => {
         });
     }
 
+    // room input text box hook
     const [joinRoomInput, setJoinRoomInput] = useState('')
 
     return (
