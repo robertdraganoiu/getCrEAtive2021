@@ -4,14 +4,24 @@ import 'firebase/auth';
 
 export const getRank = (totalWins) => {
     if (totalWins < 1) {
-        return "Total Noob";
+        return "Grandmaster";
     } else if (totalWins < 5) {
-        return "Noob";
+        return "Master";
     } else if (totalWins < 10) {
-        return "Garbage";
+        return "Good Player";
     } else if (totalWins < 20) {
-        return "Better Garbage";
-    } else {
         return "Decent";
+    } else {
+        return "Garbage";
     }
+}
+
+export const generateId = (length) => {
+    var result = "";
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+   return result;
 }
