@@ -51,14 +51,13 @@ const UserRoom = () => {
     };
 
     const joinRoom = (roomId, isFromCreate) => {
-        console.log("room id: " + roomId);
 
         const roomRef = firestore.collection("rooms").doc(roomId);
         roomRef.get().then((doc) => {
             if (doc.exists) {
                 console.log("Room data:", doc.data().users);
                 const newUsers = doc.data().users;
-                newUsers.push(auth.currentUser.email);
+                newUsers.push(userData[0]);
                 console.log(newUsers);
                 roomRef.update({
                     users: newUsers
@@ -69,10 +68,11 @@ const UserRoom = () => {
                     alert("Room does not exist");
                     throw new Error("Room does not exist");
                 }
-
+                
                 roomRef.set({
                     id: roomId,
-                    users: [auth.currentUser.email]
+                    gameStarted: false,
+                    users: [userData[0]]
                 })
                 .catch((error) => {
                     console.error("Error creating room document: ", error);
@@ -101,8 +101,8 @@ const UserRoom = () => {
         }).then(() => {
             const roomRef = firestore.collection("rooms").doc(roomId);
             roomRef.get().then((doc) => {
-                var newUsers = doc.data().users
-                newUsers = newUsers.filter(function(value) { return value != auth.currentUser.email});
+                var newUsers = doc.data().users;
+                newUsers = newUsers.filter(function(value) { return value.mail != auth.currentUser.email});
                 if (newUsers.length > 0) {
                     roomRef.update({
                         users: newUsers
@@ -132,14 +132,13 @@ const UserRoom = () => {
                     </div>
                     <div>
                         <input className='input' value={joinRoomInput} onInput={e => setJoinRoomInput(e.target.value)}/>
-                        <button className='btn' onClick={() => joinRoom(joinRoomInput, false)}>Join Room</button>
+                        <button className='btn' onClick={() => joinRoom(joinRoomInput.toUpperCase(), false)}>Join Room</button>
                     </div>
                     <SignOut />
                 </div>
                 :
                 <div>
-                    <GameRoom roomId={userData[0].roomId} firestore={firestore} username={auth.currentUser.displayName} book={auth.currentUser.email}/>
-                    <button className='btn' onClick={() => exitRoom(userData[0].roomId)}>Exit Room</button>
+                    <GameRoom roomId={userData[0].roomId} firestore={firestore} exitRoom={() => exitRoom(userData[0].roomId)}/>
                 </div>
             }
         </div>

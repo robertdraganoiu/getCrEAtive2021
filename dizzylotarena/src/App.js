@@ -26,7 +26,7 @@ function App() {
   return (
     <main>
       <header>
-
+        <title>DizzyLot Arena</title>
       </header>
 
       <section>
