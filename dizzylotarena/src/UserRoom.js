@@ -72,6 +72,9 @@ const UserRoom = () => {
                 roomRef.set({
                     id: roomId,
                     gameStarted: false,
+                    controls: "WASD",
+                    winScore: 3,
+                    difficulty: "Easy",
                     users: [userData[0]]
                 })
                 .catch((error) => {
@@ -131,7 +134,7 @@ const UserRoom = () => {
                         <button className='btn' onClick={() => createRoom()}>Create Room</button>
                     </div>
                     <div>
-                        <input className='input' value={joinRoomInput} onInput={e => setJoinRoomInput(e.target.value)}/>
+                        <input className='btn' value={joinRoomInput} onInput={e => setJoinRoomInput(e.target.value)}/>
                         <button className='btn' onClick={() => joinRoom(joinRoomInput.toUpperCase(), false)}>Join Room</button>
                     </div>
                     <SignOut />
