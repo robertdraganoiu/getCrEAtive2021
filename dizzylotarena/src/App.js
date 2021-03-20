@@ -6,6 +6,8 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 import React from 'react';
+import UserRoom from './UserRoom';
+import SignIn from './SignIn';
 
 firebase.initializeApp({
   apiKey: "AIzaSyAL5dV-Vjnt9eMVqGHTxg-SLsmseaACRo8",
@@ -16,8 +18,8 @@ firebase.initializeApp({
   appId: "1:912379030615:web:2bb33038268715ee95c712"
 })
 
-const auth = firebase.auth();
-const provider = new firebase.auth.GoogleAuthProvider();
+export const auth = firebase.auth();
+export const provider = new firebase.auth.GoogleAuthProvider();
 const firestore = firebase.firestore();
 
 function App() {
@@ -35,31 +37,5 @@ function App() {
     </main>
   );
 }
-
-const SignIn = () => {
-  return (
-    <>
-    <button className='btn' onClick={() => auth.signInWithPopup(provider)}>Sign in with Google</button>
-    </>
-  );
-};
-
-const UserRoom = () => {
-  return (
-    <>
-    <h1>User info TODO</h1>
-    <SignOut />
-    </>
-  );
-};
-
-const SignOut = () => {
-
-  return auth.currentUser && (
-    <>
-    <button className='btn' onClick={() => auth.signOut()} >Sign out</button>
-    </>
-  );
-};
 
 export default App;
