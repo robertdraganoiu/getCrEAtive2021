@@ -30,9 +30,6 @@ const UserRoom = () => {
                     inRoom: false,
                     roomId: ""
                 })
-                .then(() => {
-                    console.log("User successfully written!");
-                })
                 .catch((error) => {
                     console.error("Error writing user document: ", error);
                 });
@@ -44,8 +41,6 @@ const UserRoom = () => {
 
     const [userData] = useCollectionData(query, {idField: auth.currentUser.email});
 
-    const [roomId, setRoomId] = useState("");
-
     const createRoom = () => {
         const roomId = generateId(roomIdLen);
         joinRoom(roomId);
@@ -55,13 +50,17 @@ const UserRoom = () => {
         const roomRef = firestore.collection("rooms").doc(roomId);
         roomRef.get().then((doc) => {
             if (doc.exists) {
-                console.log("Room data:", doc.data());
+                console.log("Room data:", doc.data().users);
+                const newUsers = doc.data().users;
+                newUsers.push(auth.currentUser.email);
+                console.log(newUsers);
+                roomRef.update({
+                    users: newUsers
+                })
             } else {
                 roomRef.set({
-                    id: roomId
-                })
-                .then(() => {
-                    console.log("Room successfully created!");
+                    id: roomId,
+                    users: [auth.currentUser.email]
                 })
                 .catch((error) => {
                     console.error("Error creating room document: ", error);
@@ -74,8 +73,6 @@ const UserRoom = () => {
             docRef.update({
                 inRoom: true,
                 roomId: roomId 
-            }).then(() => {
-                console.log("Player in room status successfully updated");
             }).catch((error) => {
                 console.log("Error updating player document:", error);
             });
@@ -85,14 +82,21 @@ const UserRoom = () => {
         });
     }
 
-    const exitRoom = () => {
+    const exitRoom = (roomId) => {
         docRef.update({
             inRoom: false,
             roomId: "" 
         }).then(() => {
-            console.log("Player in room status successfully updated");
+            const roomRef = firestore.collection("rooms").doc(roomId);
+            roomRef.get().then((doc) => {
+                var newUsers = doc.data().users
+                newUsers = newUsers.filter(function(value) { return value != auth.currentUser.email});
+                roomRef.update({
+                    users: newUsers
+                })
+            })
         }).catch((error) => {
-            console.log("Error updating player document:", error);
+            console.log("Error updating player or room document:", error);
         });
     }
 
@@ -105,13 +109,13 @@ const UserRoom = () => {
                     <h3>Your total wins: {(userData && userData[0] ? userData[0].totalWins : "Loading...")}</h3>
                     <h3>Your rank: {(userData && userData[0] ? getRank(userData[0].totalWins) : "Loading...")}</h3>
                     <button className='btn' onClick={() => createRoom()}>Create Room</button>
-                    <button className='btn' onClick={() => joinRoom(userData[0].roomId)}>Join Room</button>
+                    <button className='btn' onClick={() => joinRoom("GDREOJ")}>Join Room</button>
                     <SignOut />
                 </div>
                 :
                 <div>
                     <GameRoom roomId={userData[0].roomId} firestore={firestore} username={auth.currentUser.displayName} book={auth.currentUser.email}/>
-                    <button className='btn' onClick={() => exitRoom()}>Exit Room</button>
+                    <button className='btn' onClick={() => exitRoom(userData[0].roomId)}>Exit Room</button>
                 </div>
             }
         </div>
