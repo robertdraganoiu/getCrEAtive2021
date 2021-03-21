@@ -6,6 +6,7 @@ import 'firebase/firestore';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 import { getRank, generateId } from './utils';
+import ArenaContainer from './ArenaContainer'
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -104,7 +105,7 @@ const GameRoom = ({roomId, firestore, exitRoom}) => {
         </div>
         :
         <div>
-            <h1>TODO game arena</h1>
+            <ArenaContainer rows={15} columns={15}/>
             <button className='btn' onClick={() => exitGame()}>Exit Game</button>
         </div>
     );
