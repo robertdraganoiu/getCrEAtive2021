@@ -7,10 +7,12 @@ import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 import { getRank, generateId } from './utils';
 import ArenaContainer from './ArenaContainer'
+import Player from './Player'
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { auth } from './App';
 
-const GameRoom = ({roomId, firestore, exitRoom}) => {
+const GameRoom = ({roomId, firestore, exitRoom, playerMail}) => {
 
     const roomsRef = firestore.collection('rooms');
     const query = roomsRef.where("id", "==", roomId);
@@ -66,6 +68,44 @@ const GameRoom = ({roomId, firestore, exitRoom}) => {
         });
     };
 
+    // move current player
+    useEffect(() => {
+        window.addEventListener('keydown', function(event) {
+            if (roomData && roomData[0]) {
+                var users = roomData[0].users;
+                var newUsers = users.filter(function(user) { return user.mail == auth.currentUser.email})
+                var user = newUsers[0];
+                var [x, y] = user.position;
+                switch(event.key) {
+                    case roomData[0].controls[0]: y--;
+                        break;
+                    case roomData[0].controls[1]: y++;
+                        break;
+                    case roomData[0].controls[2]: x--;
+                        break;
+                    case roomData[0].controls[3]: x++;
+                        break;            
+                }
+                for (let i = 0; i < users.length; ++i) {
+                    if (user.mail == users[i].mail) {
+                        users[i].position = [x, y];
+                    }
+                }
+                docRef.update({
+                    users:users
+                })  
+                console.log("room data in if:");
+                console.log(users);
+            } else {
+                console.log("room data outside if:" );
+                console.log(roomData);
+            }
+            return () => {
+                window.removeEventListener('keydown', event);
+            };
+        });
+    }, [roomData]);
+
     return (
         (!roomData || !roomData[0] || !roomData[0].gameStarted) ?
         <div>
@@ -104,8 +144,15 @@ const GameRoom = ({roomId, firestore, exitRoom}) => {
             </div>
         </div>
         :
-        <div>
+        <div className='container'>
             <ArenaContainer rows={15} columns={15}/>
+            <ul>
+                {roomData[0].users.map((user) => {
+                    return <div className="player" key={user.mail} style={{top:`${45 + user.position[1] * 6}vh`, left:`${45 + user.position[0] * 6}vh`}}> 
+                    </div>
+                })}
+            </ul>
+            
             <button className='btn' onClick={() => exitGame()}>Exit Game</button>
         </div>
     );

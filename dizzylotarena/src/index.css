@@ -345,8 +345,11 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  border-radius: 2vh;
   border: 1px solid #aaa;
   background-color: cyan;
   color: cyan;
+  height: 6vh;
+  width: 6vh;
+  border-radius: 50%;
+  /* display: inline-block; */
 }

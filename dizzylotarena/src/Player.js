@@ -1,33 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-const Player = () => {
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+
+const Player = ({roomId, firestore, docRef, playerMail}) => {
+
+    const roomsRef = firestore.collection('rooms');
+    const query = roomsRef.where("id", "==", roomId);
+
+    const [roomData] = useCollectionData(query, {idField: roomId});
 
     const [top, setTop] = useState(0);
     const [left, setLeft] = useState(0);
 
     React.useEffect(() => {
         window.addEventListener('keydown', function(event) {
-            var player = document.querySelector(".player");
-            var {style} = player;
-            // switch(event.key) {
-            //     case 'ArrowUp': style.top = `${parseInt(style.top) - 6}vh`;
-            //         break;
-            //     case 'ArrowDown': style.top = `${parseInt(style.top) + 6}vh`;
-            //         break;
-            //     case 'ArrowLeft': style.left = `${parseInt(style.left) - 6}vh`;
-            //         break;
-            //     case 'ArrowLeft': style.left = `${parseInt(style.left) + 6}vh`;
-            //         break;            
-            // }
-            switch(event.key) {
-                case 'ArrowUp': setTop(top - 6);
-                    break;
-                case 'ArrowDown': setTop(top - 6);
-                    break;
-                case 'ArrowLeft': style.left = `${parseInt(style.left) - 6}vh`;
-                    break;
-                case 'ArrowLeft': style.left = `${parseInt(style.left) + 6}vh`;
-                    break;            
+            if (roomData && roomData[0]) {
+                var user = roomData[0].users.filter(function(value) { return value.mail != playerMail})
+                // var [x, y] = roomData[0].position;
+                // switch(event.key) {
+                //     case 'w': y++;
+                //         break;
+                //     case 's': y--;
+                //         break;
+                //     case 'a': x--;
+                //         break;
+                //     case 'd': x++;
+                //         break;            
+                // }
+                // docRef.update({
+
+                // })
+                console.log(user);
+            } else {
+                console.log(roomData);
             }
             return () => {
                 window.removeEventListener('keydown', event);
@@ -35,8 +42,8 @@ const Player = () => {
         });
     }, []);
     return (
-        <div className="player" style=''> 
-            {"."} 
+        <div className="player" style={{top:`${45 + top}vh`, left:`${45 + left}vh`}}> 
+            <h3></h3> 
         </div>
     );
 }

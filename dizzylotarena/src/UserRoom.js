@@ -30,7 +30,8 @@ const UserRoom = () => {
                     mail: auth.currentUser.email,
                     totalWins: 0,
                     inRoom: false,
-                    roomId: ""
+                    roomId: "",
+                    position: [0, 0]
                 })
                 .catch((error) => {
                     console.error("Error writing user document: ", error);
@@ -72,7 +73,7 @@ const UserRoom = () => {
                 roomRef.set({
                     id: roomId,
                     gameStarted: false,
-                    controls: "WASD",
+                    controls: "wsad",
                     winScore: 3,
                     difficulty: "Easy",
                     users: [userData[0]]
@@ -141,7 +142,7 @@ const UserRoom = () => {
                 </div>
                 :
                 <div>
-                    <GameRoom roomId={userData[0].roomId} firestore={firestore} exitRoom={() => exitRoom(userData[0].roomId)}/>
+                    <GameRoom roomId={userData[0].roomId} firestore={firestore} exitRoom={() => exitRoom(userData[0].roomId)} playerMail={auth.currentUser.email}/>
                 </div>
             }
         </div>
